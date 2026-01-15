@@ -1,0 +1,25 @@
+# Ambientes Virtuais (Python)
+.venv/
+venv/
+ENV/
+env/
+
+# Dados (Engenharia de Dados)
+# Ignoramos o conteúdo da pasta data, mas mantemos a pasta
+include/data/*.csv
+include/data/*.json
+
+# Airflow e Astro
+.astro/
+logs/
+airflow.db
+unittests.cfg
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
