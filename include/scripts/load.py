@@ -1,5 +1,5 @@
 import pandas as pd 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 import os
 
 def load_queimadas(input_path):
@@ -20,7 +20,22 @@ def load_queimadas(input_path):
         if df.empty:
             print("O Dataframe está vazio. Nenhuma carga será realizada")
             return
+            
+        # --- LÓGICA DE IDEMPOTÊNCIA ---
+        # 4. Extrair a data que estamos carregando (baseada na primeira linha da coluna data_hora_gmt)
+        # Convertemos para o formato de data do SQL (YYYY-MM-DD)
+        data_carga = pd.to_datetime(df['data_hora_gmt']).dt.date.iloc[0]
         
+        print(f"Limpando dados antigos da data: {data_carga} para evitar duplicados...")
+        
+        with engine.connect() as conn:
+            # Comando SQL para deletar registros existentes daquela data
+            # Usamos DATE() para comparar apenas o dia, ignorando horas/minutos
+            query = text(f"DELETE FROM focos_queimadas WHERE DATE(data_hora_gmt) = '{data_carga}'")
+            conn.execute(query)
+            conn.commit() # Confirma a exclusão
+
+
         # 4. Inserindo dados no banco
         # 'focos_queimadas' será o nme da tabela
         # if_exists = append garante que os dados novos sejam adicionados aos antigos
