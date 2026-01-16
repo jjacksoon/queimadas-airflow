@@ -6,13 +6,14 @@ from datetime import datetime
 def extract_queimadas():
     # 1. Gerar url dinânmica uma vez que o arquivo extraido muda diariamente
     hoje = datetime.now().strftime('%Y%m%d')
-    url = 'https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/Brasil/'
+    # A URL precisa terminar com o nome do arquivo .csv
+    url = f"https://dataserver-coids.inpe.br/queimadas/queimadas/focos/csv/diario/Brasil/focos_diario_br_{hoje}.csv"
 
     #Destino camada bronze
-    raw_data_path = f"include/data/focos_raw_{hoje}.csv"
+    raw_data_path = f"include/data/raw/focos_raw_{hoje}.csv"
 
     # Garantindo que a pasta exista
-    os.makedirs('include/data', exist_ok = True)
+    os.makedirs('include/data/raw', exist_ok = True)
 
     try:
         print(f"Baixando dados do INPE: {url}")
@@ -30,6 +31,6 @@ def extract_queimadas():
         #Retornando o caminho para que Airflow possa passar para a próxima tarefa
         return raw_data_path
     
-    exception Exception as e:
+    except Exception as e:
         print(f"Erro na extração: {e}")
         raise e
