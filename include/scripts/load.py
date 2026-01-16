@@ -7,7 +7,7 @@ def load_queimadas(input_path):
 
     # 1. Configurando conexão com o Postgres do Astro CLI
     # host 'postgres' é o nome do serviço dentro da rede do Docker
-    conn_string = "postgresql://postgres:postgres@localhost:5432/postgres"
+    conn_string = "postgresql://postgres:postgres@postgres:5432/postgres"
 
     try:
         # 2. Criando o motor de conexão
