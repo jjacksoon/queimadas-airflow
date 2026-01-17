@@ -18,7 +18,8 @@ O pipeline segue um fluxo robusto dividido em três etapas principais:
 3.  **Carga (Database):** Inserção no Postgres utilizando uma estratégia de **Idempotência**. O pipeline identifica as datas no arquivo e remove registros pré-existentes antes da nova carga, permitindo re-execuções sem duplicidade de dados.
 
 ### Diagrama de Fluxo
-```graph LR
+```mermaid
+graph LR
     %% Definição de Estilos (Cores)
     classDef bronze fill:#cd7f32,stroke:#333,stroke-width:2px,color:#fff;
     classDef silver fill:#c0c0c0,stroke:#333,stroke-width:2px,color:#000;
