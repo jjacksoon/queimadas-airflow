@@ -18,23 +18,30 @@ O pipeline segue um fluxo robusto dividido em três etapas principais:
 3.  **Carga (Database):** Inserção no Postgres utilizando uma estratégia de **Idempotência**. O pipeline identifica as datas no arquivo e remove registros pré-existentes antes da nova carga, permitindo re-execuções sem duplicidade de dados.
 
 ### Diagrama de Fluxo
-```mermaid
-graph LR
+```graph LR
+    %% Definição de Estilos (Cores)
+    classDef bronze fill:#cd7f32,stroke:#333,stroke-width:2px,color:#fff;
+    classDef silver fill:#c0c0c0,stroke:#333,stroke-width:2px,color:#000;
+    classDef gold fill:#ffd700,stroke:#333,stroke-width:2px,color:#000;
+    classDef airflow fill:#017cee,stroke:#333,stroke-width:2px,color:#fff;
+    classDef inpe fill:#f9f9f9,stroke:#333,stroke-dasharray: 5 5;
+
     subgraph "Fonte Externa"
-        INPE[Servidor INPE - CSV]
+        INPE[Servidor INPE - CSV]:::inpe
     end
 
     subgraph "Orquestrador (Apache Airflow)"
-        E[Tarefa: Extrair] --> T[Tarefa: Transformar]
-        T --> L[Tarefa: Carregar]
+        E[Tarefa: Extrair]:::airflow --> T[Tarefa: Transformar]:::airflow
+        T --> L[Tarefa: Carregar]:::airflow
     end
 
     subgraph "Armazenamento (Docker)"
-        R[(Camada Bronze: Raw CSV)]
-        S[(Camada Silver: Clean CSV)]
-        DB[(PostgreSQL)]
+        R[(Camada Bronze: Raw CSV)]:::bronze
+        S[(Camada Silver: Clean CSV)]:::silver
+        DB[(PostgreSQL)]:::gold
     end
 
+    %% Conexões
     INPE -.-> E
     E --> R
     R --> T
