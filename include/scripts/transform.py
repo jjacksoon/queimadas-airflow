@@ -6,6 +6,9 @@ def transform_queimadas(input_path):
     print(f"Iniciando transformação do arquivo:{input_path}")
 
     # 1. Lendo CSV bruto
+    if not os.path.exists(input_path):
+        raise FileNotFoundError(f"Arquivo não encontrado: {input_path}")
+        
     df = pd.read_csv(input_path)
 
     # 2. Selecionando apenas colunas essenciais

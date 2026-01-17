@@ -24,17 +24,17 @@ def load_queimadas(input_path):
         # --- LÓGICA DE IDEMPOTÊNCIA ---
         # 4. Extrair a data que estamos carregando (baseada na primeira linha da coluna data_hora_gmt)
         # Convertemos para o formato de data do SQL (YYYY-MM-DD)
-        data_carga = pd.to_datetime(df['data_hora_gmt']).dt.date.iloc[0]
+        df['data_hora_gmt'] = pd.to_datetime(df['data_hora_gmt'])
         
-        print(f"Limpando dados antigos da data: {data_carga} para evitar duplicados...")
+       # Identificando todas as datas únicas dentro deste arquivo
+        datas_no_arquivo = df['data_hora_gmt'].dt.date.unique()
         
-        with engine.connect() as conn:
-            # Comando SQL para deletar registros existentes daquela data
-            # Usamos DATE() para comparar apenas o dia, ignorando horas/minutos
-            query = text(f"DELETE FROM focos_queimadas WHERE DATE(data_hora_gmt) = '{data_carga}'")
-            conn.execute(query)
-            conn.commit() # Confirma a exclusão
-
+        with engine.begin() as conn:
+            for data_ref in datas_no_arquivo:
+                print(f"Limpando registros existentes para o dia: {data_ref}")
+                # Usamos o parâmetro :dt para segurança
+                query = text("DELETE FROM focos_queimadas WHERE DATE(data_hora_gmt) = :dt")
+                conn.execute(query, {"dt": data_ref})
 
         # 4. Inserindo dados no banco
         # 'focos_queimadas' será o nme da tabela
